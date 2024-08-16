@@ -20,22 +20,11 @@ public class BypassPathfinder extends Pathfinder {
         return Pathfinder.getInstance(BypassPathfinder.class);
     }
 
-    public void prewarm() {
-        if (bypassCache.size() > 0) {
-            return;
-        }
-
-        gridProcessor.processEntireGrid(loc1 -> targetIsWalkable(loc1),
-                loc1 -> {
-                    gridProcessor.processEntireGrid(loc2 -> targetIsWalkable(loc2),
-                            loc2 -> {
-                                Pair<Location, Location> key = new Pair<>(loc1, loc2);
-                                if (!bypassCache.containsKey(key)) {
-                                    cachePath(loc1, loc2);
-                                }
-                            },
-                            c -> false);
-                },
+    @Override
+    protected void excludeObstacles() {
+        GridModel model = GridModel.getInstance();
+        gridProcessor.processEntireGrid(loc -> model.getObjectsAt(loc).contains(GridModel.OBSTACLE),
+                loc -> ds.updateCell(loc.x, loc.y, -1),
                 c -> false);
     }
 

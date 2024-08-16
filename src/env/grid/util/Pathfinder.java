@@ -40,8 +40,7 @@ public abstract class Pathfinder {
         gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
     }
 
-    protected void excludeObstacles() {
-    };
+    protected abstract void excludeObstacles();
 
     protected abstract boolean targetIsWalkable(Location target);
 

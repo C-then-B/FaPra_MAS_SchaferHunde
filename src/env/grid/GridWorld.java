@@ -43,17 +43,13 @@ public class GridWorld extends Artifact {
 
         Integer sheepWaitTime = loader.getProperty("sheep_wait_duration", Integer.class);
         Double houndWaitRatio = 0.0;
-        try{
+        try {
             houndWaitRatio = init_agent.getWait_ratio();
-        }catch(java.rmi.RemoteException e){
+        } catch (java.rmi.RemoteException e) {
             e.printStackTrace();
         }
         Integer houndWaitTime = (int) (sheepWaitTime * houndWaitRatio);
         scenarioInfo = new ScenarioInfo(sheepWaitTime, houndWaitTime, houndWaitRatio);
-
-        if (System.getProperty("simName") != null) {
-            BypassPathfinder.getInstance().prewarm();
-        }
     }
 
     @OPERATION

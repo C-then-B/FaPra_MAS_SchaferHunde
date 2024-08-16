@@ -2,6 +2,7 @@ package env.grid.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import grid.GridModel;
 import grid.util.BypassPathfinder;
 import grid.util.AgentPathfinder;
 import grid.util.Pathfinder;
+import grid.util.Pathfinder.NoPathFoundException;
 import jason.environment.grid.Location;
 import model.AgentInfo;
 
@@ -99,7 +101,6 @@ public class PathfinderTest {
         model.setAgPos(hound, targetPos);
 
         BypassPathfinder pathfinder = BypassPathfinder.getInstance();
-        pathfinder.prewarm();
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
         assertNotEquals(startPos, nextPos);
     }
@@ -132,11 +133,51 @@ public class PathfinderTest {
         Location targetPos = new Location(7, 8);
 
         BypassPathfinder bypassPathfinder = BypassPathfinder.getInstance();
-        bypassPathfinder.prewarm();
         Pathfinder regularPathfinder = AgentPathfinder.getInstance();
         Location nextPosBypass = bypassPathfinder.getNextPosition(startPos, targetPos);
         Location nextPosRegular = regularPathfinder.getNextPosition(startPos, targetPos);
         assertEquals(new Location(7, 12), nextPosBypass);
         assertNotEquals(nextPosBypass, nextPosRegular);
+    }
+
+    @Test
+    public void testPathfinderBypass3() {
+        GridModel model = GridModel.create("src/test/resources/templates/9_test.txt");
+        AgentInfo sheep = new AgentInfo(GridModel.SHEEP, 5, "sheep");
+        model.initAgent(sheep);
+        Location startPos = new Location(0, 0);
+        model.setAgPos(sheep, startPos);
+        Location targetPos = new Location(2, 0);
+
+        BypassPathfinder pathfinder = BypassPathfinder.getInstance();
+        Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
+        assertEquals(new Location(0, 1), nextPos);
+    }
+
+    @Test
+    public void testPathfinderBypass4() {
+        GridModel model = GridModel.create("src/test/resources/templates/9_test.txt");
+        AgentInfo sheep = new AgentInfo(GridModel.SHEEP, 5, "sheep");
+        model.initAgent(sheep);
+        Location startPos = new Location(4, 0);
+        model.setAgPos(sheep, startPos);
+        Location targetPos = new Location(2, 0);
+
+        BypassPathfinder pathfinder = BypassPathfinder.getInstance();
+        Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
+        assertEquals(new Location(3, 0), nextPos);
+    }
+
+    @Test
+    public void testPathfinderBypass5() {
+        GridModel model = GridModel.create("src/test/resources/templates/9_test.txt");
+        AgentInfo sheep = new AgentInfo(GridModel.SHEEP, 5, "sheep");
+        model.initAgent(sheep);
+        Location startPos = new Location(4, 2);
+        model.setAgPos(sheep, startPos);
+        Location targetPos = new Location(2, 0);
+
+        BypassPathfinder pathfinder = BypassPathfinder.getInstance();
+        assertThrows(NoPathFoundException.class, () -> pathfinder.getNextPosition(startPos, targetPos));
     }
 }
